@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapps/sqlite/landing.dart';
+import 'package:flutterapps/sqlite/HomePage.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Landing(),
+      home: HomePage(),
     );
   }
 }
