@@ -50,7 +50,8 @@ class _HomePageState extends State<HomePage> {
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: datas.length,
-              itemBuilder: (context, index) => DataCard(data: datas[index])),
+              itemBuilder: (context, index) => DataCard(data: datas[index]),
+            ),
     );
   }
 

@@ -6,13 +6,13 @@ class DB {
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, 'Test.db'),
+      join(path, 'Test3.db'),
       onCreate: (database, version) async {
         await database.execute(
           """CREATE TABLE MyTable(
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
             title TEXT NOT NULL,
-            subtitle TEXT NOT NULL, 
+            subtitle TEXT NOT NULL 
            )""",
         );
       },
