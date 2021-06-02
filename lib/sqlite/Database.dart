@@ -6,7 +6,7 @@ class DB {
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, 'Test3.db'),
+      join(path, 'Test4.db'),
       onCreate: (database, version) async {
         await database.execute(
           """CREATE TABLE MyTable(
