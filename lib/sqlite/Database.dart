@@ -6,13 +6,13 @@ class DB {
   Future<Database> initDB() async {
     String path = await getDatabasesPath();
     return openDatabase(
-      join(path, "MYDB.db"),
+      join(path, "MYDb.db"),
       onCreate: (database, verison) async {
         await database.execute("""
         CREATE TABLE MYTable(
-        id INTEGER PRIMERY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        subtile TEXT NOT NULL
+        subtitle TEXT NOT NULL
         )
         """);
       },
@@ -24,5 +24,11 @@ class DB {
     final Database db = await initDB();
     db.insert("MYTable", dataModel.toMap());
     return true;
+  }
+
+  Future<List<DataModel>> getData() async {
+    final Database db = await initDB();
+    final List<Map<String, Object?>> datas = await db.query("MYTable");
+    return datas.map((e) => DataModel.fromMap(e)).toList();
   }
 }
