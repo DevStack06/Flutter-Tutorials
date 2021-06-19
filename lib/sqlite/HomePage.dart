@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapps/sqlite/DataCard.dart';
 import 'package:flutterapps/sqlite/DataModel.dart';
 import 'package:flutterapps/sqlite/Database.dart';
 
@@ -47,8 +48,9 @@ class _HomePageState extends State<HomePage> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : Center(
-              child: Text(datas[0].title),
+          : ListView.builder(
+              itemCount: datas.length,
+              itemBuilder: (context, index) => DataCard(data: datas[index]),
             ),
     );
   }
@@ -80,10 +82,16 @@ class _HomePageState extends State<HomePage> {
             actions: [
               TextButton(
                 onPressed: () {
-                  db.insertData(DataModel(
+                  DataModel dataLocal = DataModel(
                       title: titleController.text,
-                      subtitle: subtitleController.text));
-
+                      subtitle: subtitleController.text);
+                  db.insertData(dataLocal);
+                  dataLocal.id = datas[datas.length - 1].id! + 1;
+                  setState(() {
+                    datas.add(dataLocal);
+                  });
+                  titleController.clear();
+                  subtitleController.clear();
                   Navigator.pop(context);
                 },
                 child: Text("Save"),
