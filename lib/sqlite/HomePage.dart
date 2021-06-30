@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController subtitleController = TextEditingController();
   List<DataModel> datas = [];
   bool fetching = true;
+  int currentIndex = 0;
 
   late DB db;
   @override
@@ -40,7 +41,9 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showMyDilogue();
+          titleController.clear();
+          subtitleController.clear();
+          showMyDilogue(false);
         },
         child: Icon(Icons.add),
       ),
@@ -50,12 +53,16 @@ class _HomePageState extends State<HomePage> {
             )
           : ListView.builder(
               itemCount: datas.length,
-              itemBuilder: (context, index) => DataCard(data: datas[index]),
+              itemBuilder: (context, index) => DataCard(
+                data: datas[index],
+                edit: edit,
+                index: index,
+              ),
             ),
     );
   }
 
-  void showMyDilogue() async {
+  void showMyDilogue(bool update) async {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -81,23 +88,39 @@ class _HomePageState extends State<HomePage> {
             ),
             actions: [
               TextButton(
-                onPressed: () {
-                  DataModel dataLocal = DataModel(
-                      title: titleController.text,
-                      subtitle: subtitleController.text);
-                  db.insertData(dataLocal);
-                  dataLocal.id = datas[datas.length - 1].id! + 1;
-                  setState(() {
-                    datas.add(dataLocal);
-                  });
-                  titleController.clear();
-                  subtitleController.clear();
-                  Navigator.pop(context);
-                },
-                child: Text("Save"),
+                onPressed: update ? updateData : save,
+                child: Text(update ? "Update" : "Save"),
               ),
             ],
           );
         });
+  }
+
+  void save() {
+    DataModel dataLocal = DataModel(
+        title: titleController.text, subtitle: subtitleController.text);
+    db.insertData(dataLocal);
+    dataLocal.id = datas[datas.length - 1].id! + 1;
+    setState(() {
+      datas.add(dataLocal);
+    });
+
+    Navigator.pop(context);
+  }
+
+  void updateData() {
+    datas[currentIndex].title = titleController.text;
+    datas[currentIndex].subtitle = subtitleController.text;
+    setState(() {});
+    db.update(datas[currentIndex], datas[currentIndex].id!);
+
+    Navigator.pop(context);
+  }
+
+  void edit(int index) {
+    currentIndex = index;
+    titleController.text = datas[index].title;
+    subtitleController.text = datas[index].subtitle;
+    showMyDilogue(true);
   }
 }

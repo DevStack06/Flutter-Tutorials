@@ -31,4 +31,25 @@ class DB {
     final List<Map<String, Object?>> datas = await db.query("MYTable");
     return datas.map((e) => DataModel.fromMap(e)).toList();
   }
+
+  Future<bool> update(DataModel dataModel, int id) async {
+    final Database db = await initDB();
+    db.update(
+      "MYTable",
+      dataModel.toMap(),
+      where: "id=?",
+      whereArgs: [id],
+    );
+    return true;
+  }
+
+  Future<bool> delete(int id) async {
+    final Database db = await initDB();
+    db.delete(
+      "MYTable",
+      where: "id=?",
+      whereArgs: [id],
+    );
+    return true;
+  }
 }
