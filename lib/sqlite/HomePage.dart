@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapps/sqlite/DataCard.dart';
-import 'package:flutterapps/sqlite/dataModel.dart';
-
-import 'Database.dart';
+import 'package:flutterapps/sqlite/DataModel.dart';
+import 'package:flutterapps/sqlite/Database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,21 +11,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late DB db;
-  List<DataModel> datas = [];
-  bool fetching = true;
   TextEditingController titleController = TextEditingController();
   TextEditingController subtitleController = TextEditingController();
+  List<DataModel> datas = [];
+  bool fetching = true;
 
+  late DB db;
   @override
   void initState() {
     super.initState();
     db = DB();
-    db.initializeDB();
-    getData();
+    getData2();
   }
 
-  getData() async {
+  void getData2() async {
     datas = await db.getData();
     setState(() {
       fetching = false;
@@ -42,12 +40,14 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showMyDialog();
+          showMyDilogue();
         },
         child: Icon(Icons.add),
       ),
       body: fetching
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
           : ListView.builder(
               itemCount: datas.length,
               itemBuilder: (context, index) => DataCard(data: datas[index]),
@@ -55,51 +55,49 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void showMyDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          contentPadding: EdgeInsets.all(16.0),
-          content: Container(
-            height: 150,
-            child: Column(
-              children: <Widget>[
-                TextField(
-                  controller: titleController,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'title',
+  void showMyDilogue() async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.all(14),
+            content: Container(
+              height: 150,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    decoration: InputDecoration(labelText: "title"),
                   ),
-                ),
-                TextField(
-                  controller: subtitleController,
-                  autofocus: true,
-                  decoration: new InputDecoration(
-                    labelText: 'subtitle',
+                  SizedBox(
+                    height: 10,
                   ),
-                )
-              ],
+                  TextFormField(
+                    controller: subtitleController,
+                    decoration: InputDecoration(labelText: "Subtitle"),
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Save'),
-              onPressed: () {
-                DataModel model = DataModel(
-                  title: titleController.text,
-                  subtitle: subtitleController.text,
-                );
-                db.insertData(model);
-                setState(() {
-                  datas = [...datas, model];
-                });
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
-      },
-    );
+            actions: [
+              TextButton(
+                onPressed: () {
+                  DataModel dataLocal = DataModel(
+                      title: titleController.text,
+                      subtitle: subtitleController.text);
+                  db.insertData(dataLocal);
+                  dataLocal.id = datas[datas.length - 1].id! + 1;
+                  setState(() {
+                    datas.add(dataLocal);
+                  });
+                  titleController.clear();
+                  subtitleController.clear();
+                  Navigator.pop(context);
+                },
+                child: Text("Save"),
+              ),
+            ],
+          );
+        });
   }
 }
