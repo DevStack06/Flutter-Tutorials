@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapps/sqlite/DataCard.dart';
-import 'package:flutterapps/sqlite/DataModel.dart';
 import 'package:flutterapps/sqlite/Database.dart';
+
+import 'dataModel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -41,9 +42,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          titleController.clear();
-          subtitleController.clear();
-          showMyDilogue(false);
+          showMyDilogue();
         },
         child: Icon(Icons.add),
       ),
@@ -57,12 +56,13 @@ class _HomePageState extends State<HomePage> {
                 data: datas[index],
                 edit: edit,
                 index: index,
+                delete: delete,
               ),
             ),
     );
   }
 
-  void showMyDilogue(bool update) async {
+  void showMyDilogue() async {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -88,39 +88,78 @@ class _HomePageState extends State<HomePage> {
             ),
             actions: [
               TextButton(
-                onPressed: update ? updateData : save,
-                child: Text(update ? "Update" : "Save"),
+                onPressed: () {
+                  DataModel dataLocal = DataModel(
+                      title: titleController.text,
+                      subtitle: subtitleController.text);
+                  db.insertData(dataLocal);
+                  dataLocal.id = datas[datas.length - 1].id! + 1;
+                  setState(() {
+                    datas.add(dataLocal);
+                  });
+                  titleController.clear();
+                  subtitleController.clear();
+                  Navigator.pop(context);
+                },
+                child: Text("Save"),
               ),
             ],
           );
         });
   }
 
-  void save() {
-    DataModel dataLocal = DataModel(
-        title: titleController.text, subtitle: subtitleController.text);
-    db.insertData(dataLocal);
-    dataLocal.id = datas[datas.length - 1].id! + 1;
-    setState(() {
-      datas.add(dataLocal);
-    });
-
-    Navigator.pop(context);
+  void showMyDilogueUpdate() async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.all(14),
+            content: Container(
+              height: 150,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    decoration: InputDecoration(labelText: "title"),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: subtitleController,
+                    decoration: InputDecoration(labelText: "Subtitle"),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  DataModel newData = datas[currentIndex];
+                  newData.subtitle = subtitleController.text;
+                  newData.title = titleController.text;
+                  db.update(newData, newData.id!);
+                  setState(() {});
+                  Navigator.pop(context);
+                },
+                child: Text("Update"),
+              ),
+            ],
+          );
+        });
   }
 
-  void updateData() {
-    datas[currentIndex].title = titleController.text;
-    datas[currentIndex].subtitle = subtitleController.text;
-    setState(() {});
-    db.update(datas[currentIndex], datas[currentIndex].id!);
-
-    Navigator.pop(context);
-  }
-
-  void edit(int index) {
+  void edit(index) {
     currentIndex = index;
     titleController.text = datas[index].title;
     subtitleController.text = datas[index].subtitle;
-    showMyDilogue(true);
+    showMyDilogueUpdate();
+  }
+
+  void delete(int index) {
+    db.delete(datas[index].id!);
+    setState(() {
+      datas.removeAt(index);
+    });
   }
 }

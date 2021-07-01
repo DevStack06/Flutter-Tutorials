@@ -1,4 +1,4 @@
-import 'package:flutterapps/sqlite/DataModel.dart';
+import 'package:flutterapps/sqlite/dataModel.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -32,24 +32,14 @@ class DB {
     return datas.map((e) => DataModel.fromMap(e)).toList();
   }
 
-  Future<bool> update(DataModel dataModel, int id) async {
+  Future<void> update(DataModel dataModel, int id) async {
     final Database db = await initDB();
-    db.update(
-      "MYTable",
-      dataModel.toMap(),
-      where: "id=?",
-      whereArgs: [id],
-    );
-    return true;
+    await db
+        .update("MYTable", dataModel.toMap(), where: "id=?", whereArgs: [id]);
   }
 
-  Future<bool> delete(int id) async {
+  Future<void> delete(int id) async {
     final Database db = await initDB();
-    db.delete(
-      "MYTable",
-      where: "id=?",
-      whereArgs: [id],
-    );
-    return true;
+    await db.delete("MYTable", where: "id=?", whereArgs: [id]);
   }
 }

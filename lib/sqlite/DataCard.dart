@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapps/sqlite/DataModel.dart';
+
+import 'dataModel.dart';
 
 class DataCard extends StatelessWidget {
-  const DataCard(
-      {Key? key, required this.data, required this.edit, required this.index})
-      : super(key: key);
+  const DataCard({
+    Key? key,
+    required this.data,
+    required this.edit,
+    required this.index,
+    required this.delete,
+  }) : super(key: key);
   final DataModel data;
   final Function edit;
+  final Function delete;
+
   final int index;
 
   @override
@@ -15,21 +22,24 @@ class DataCard extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           child: IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              edit(index);
-            },
-          ),
+              onPressed: () {
+                edit(index);
+              },
+              icon: Icon(Icons.edit)),
         ),
         title: Text(data.title),
         subtitle: Text(data.subtitle),
         trailing: CircleAvatar(
-          backgroundColor: Colors.red,
-          child: Icon(
-            Icons.delete,
-            color: Colors.white,
-          ),
-        ),
+            backgroundColor: Colors.red,
+            child: IconButton(
+              icon: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                delete(index);
+              },
+            )),
       ),
     );
   }
