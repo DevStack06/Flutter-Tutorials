@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapps/sqlite/HomePage.dart';
+import 'package:flutterapps/RestAPI/rest_api.dart';
 
 void main() async {
   runApp(MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: RestAPI(),
     );
   }
 }
